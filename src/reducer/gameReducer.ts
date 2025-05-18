@@ -1,7 +1,8 @@
 import { GameState, CardData } from '@/types/game';
 
 type Action =
-  | { type: 'PLAY_CARD'; payload: { playerId: string; card: CardData } };
+  | { type: 'PLAY_CARD'; payload: { playerId: string; card: CardData } }
+  | { type: 'END_TURN'; payload: { nextPlayerId: string } };
 
 export function gameReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
@@ -18,6 +19,9 @@ export function gameReducer(state: GameState, action: Action): GameState {
       }) as [typeof state.players[0], typeof state.players[1]];
 
       return { ...state, players };
+    }
+    case 'END_TURN': {
+      return { ...state, currentPlayerId: action.payload.nextPlayerId };
     }
     default:
       return state;

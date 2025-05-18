@@ -31,17 +31,17 @@ const Board: React.FC<BoardProps> = ({ gameState, onPlay }) => {
     <div className="board-wrapper">
       <div className="board-container">
         {orderedRows.map(({ playerIndex, row }) => {
-          const player = gameState.players[playerIndex];
+          const isCurrentPlayer = gameState.currentPlayerId === gameState.players[playerIndex].id;
           return (
             <div
-              key={`${player.id}-${row}`} 
-              className="row"
-              onDragOver={handleDragOver}
-              onDrop={(e) => playerIndex === 1 && handleDrop(e, row)}
+              key={`${playerIndex}-${row}`} 
+              className={`row ${isCurrentPlayer ? 'draggable' : ''}`}
+              onDragOver={isCurrentPlayer ? handleDragOver : undefined}
+              onDrop={isCurrentPlayer ? (e) => handleDrop(e, row) : undefined}
             >
               <h4 className="row-title capitalize">{row}</h4>
               <div className="cards">
-                {player.board[row].map((card) => (
+                {gameState.players[playerIndex].board[row].map((card) => (
                   <Card key={card.id} card={card} />
                 ))}
               </div>

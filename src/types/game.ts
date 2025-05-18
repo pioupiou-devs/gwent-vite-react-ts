@@ -16,11 +16,12 @@ export interface Player {
   hand: CardData[];
   board: Record<Row, CardData[]>;
   score: number;
+  passed: boolean;
+  roundsWon: number;
 }
 
 export interface GameState {
   players: [Player, Player];
   currentPlayerId: string;
   round: number;
-  passed: Record<string, boolean>;
 }
