@@ -3,7 +3,6 @@ import Board from '@/components/Board';
 import ProfilePanel from '@/components/ProfilePanel';
 import { GameState, CardData, Row } from '@/types/game';
 import { gameReducer } from '@/reducer/gameReducer';
-import Card from './components/Card';
 
 // Initial sample card
 const sampleCard: CardData = {
@@ -20,16 +19,16 @@ const initialState: GameState = {
     {
       id: 'p1',
       name: 'Player 1',
-      deck: [sampleCard],
-      hand: [sampleCard],
+      deck: [],
+      hand: [],
       board: { melee: [], ranged: [], siege: [] },
       score: 0,
     },
     {
       id: 'p2',
       name: 'Player 2',
-      deck: [],
-      hand: [],
+      deck: [sampleCard],
+      hand: [sampleCard],
       board: { melee: [], ranged: [], siege: [] },
       score: 0,
     },
@@ -38,13 +37,19 @@ const initialState: GameState = {
   round: 1,
   passed: { p1: false, p2: false },
 };
+
+
 const App: React.FC = () => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
   const current = state.players[1];
-  const enemy = state.players[0];
+  const enemy = state.players[1];
 
-  const handlePlay = (card: CardData) => {
-    dispatch({ type: 'PLAY_CARD', payload: { playerId: current.id, card } });
+  const handlePlay = (cardId: string, targetRow: Row) => {
+    const card = state.players[1].hand.find((c) => c.id === cardId);
+    if (card) {
+      const playedCard = { ...card, row: targetRow };
+      dispatch({ type: 'PLAY_CARD', payload: { playerId: 'p2', card: playedCard } });
+    }
   };
 
   return (
@@ -54,12 +59,7 @@ const App: React.FC = () => {
         <ProfilePanel player={current} isCurrent={true} roundsWon={1} />
       </div>
       <div className="main-board">
-        <Board gameState={state} />
-        <div className="hand-row">
-          {current.hand.map((card) => (
-            <Card key={card.id} card={card} onPlay={handlePlay} />
-          ))}
-        </div>
+        <Board gameState={state} onPlay={handlePlay} />
       </div>
     </div>
   );

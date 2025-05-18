@@ -3,18 +3,18 @@ import { CardData } from '@/types/game';
 
 interface CardProps {
   card: CardData;
-  onPlay?: (card: CardData) => void;
 }
 
-const Card: React.FC<CardProps> = ({ card, onPlay }) => {
-  const handleClick = () => {
-    onPlay?.(card);
+const Card: React.FC<CardProps> = ({ card }) => {
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('text/plain', card.id);
   };
 
   return (
     <div
       className="card"
-      onClick={handleClick}
+      draggable
+      onDragStart={handleDragStart}
       role="button"
       tabIndex={0}
     >
