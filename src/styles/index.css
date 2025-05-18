@@ -69,12 +69,22 @@ body {
   padding: 2rem;
 }
 
+.board-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: url('/assets/board-wood.jpg') center/cover no-repeat;
+  padding: 2rem;
+}
+
 .board-container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
+  justify-content: space-between;
 }
+
 
 .player-rows {
   display: flex;
@@ -110,6 +120,7 @@ body {
 }
 
 /* Hand Row */
+
 .hand-row {
   display: flex;
   justify-content: center;
@@ -117,4 +128,5 @@ body {
   padding: 1rem;
   background: rgba(0,0,0,0.6);
   border-top: 2px solid #333;
+  min-height: 120px;
 }

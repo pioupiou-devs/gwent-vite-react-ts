@@ -9,7 +9,7 @@ interface ProfilePanelProps {
 
 const ProfilePanel: React.FC<ProfilePanelProps> = ({ player, isCurrent, roundsWon }) => (
   <div className={`profile-panel ${isCurrent ? 'current' : 'enemy'}`}>
-    <img src={`/avatars/${player.id}.png`} alt={player.name} className="avatar" />
+    <img src={`src/assets/avatars/${player.id}.jpg`} alt={player.name} className="avatar" />
     <div className="player-name">{player.name}</div>
     <div className="rounds">
       {[1,2,3].map((i) => (
