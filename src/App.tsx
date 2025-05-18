@@ -38,11 +38,14 @@ const initialState: GameState = {
   round: 1,
   passed: { p1: false, p2: false },
 };
-
 const App: React.FC = () => {
-  const [state] = useReducer(gameReducer, initialState);
+  const [state, dispatch] = useReducer(gameReducer, initialState);
   const current = state.players[1];
   const enemy = state.players[0];
+
+  const handlePlay = (card: CardData) => {
+    dispatch({ type: 'PLAY_CARD', payload: { playerId: current.id, card } });
+  };
 
   return (
     <div className="app-layout">
@@ -54,7 +57,7 @@ const App: React.FC = () => {
         <Board gameState={state} />
         <div className="hand-row">
           {current.hand.map((card) => (
-            <Card key={card.id} card={card} onPlay={() => {}} />
+            <Card key={card.id} card={card} onPlay={handlePlay} />
           ))}
         </div>
       </div>

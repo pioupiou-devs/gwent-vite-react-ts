@@ -16,7 +16,7 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ player, isCurrent, roundsWo
         <span key={i} className={`crown ${roundsWon >= i ? 'filled' : ''}`}>👑</span>
       ))}
     </div>
-    <div className="player-score">Score: {player.score}</div>
+    <div className="player-score">{player.score}</div>
   </div>
 );
 
