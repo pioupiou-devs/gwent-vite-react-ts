@@ -11,7 +11,7 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ player, isCurrent }) => (
     <img src={`/avatars/${player.id}.png`} alt={player.name} className="avatar" />
     <div className="player-name">{player.name}</div>
     <div className="rounds">
-      {[1, 2, 3].map((i) => (
+      {[1, 2, 3].map(i => (
         <span key={i} className={`crown ${player.roundsWon >= i ? 'filled' : ''}`}>👑</span>
       ))}
     </div>

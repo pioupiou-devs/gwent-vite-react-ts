@@ -24,4 +24,4 @@ export interface GameState {
   players: [Player, Player];
   currentPlayerId: string;
   round: number;
-}
+} 

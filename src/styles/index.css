@@ -38,3 +38,4 @@ body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
 .card-strength { font-weight: bold; color: #4caf50; }
 .card-row { font-style: italic; color: #90caf9; }
 .card-hero { margin-top: 0.5rem; color: #e57373; font-weight: bold; }
+.end-turn-btn + .end-turn-btn { margin-top: 0.5rem; }
