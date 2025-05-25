@@ -1,0 +1,5 @@
+[
+  { "id": "1", "name": "Blue Stripes Commando", "strength": 4, "row": "melee", "faction": "Northern Realms" },
+  { "id": "2", "name": "Kaedweni Siege Expert", "strength": 3, "row": "siege", "faction": "Northern Realms" },
+  { "id": "3", "name": "Redanian Foot Soldier", "strength": 1, "row": "ranged", "faction": "Northern Realms" }
+]

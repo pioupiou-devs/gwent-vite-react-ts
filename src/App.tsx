@@ -1,40 +1,51 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import Board from '@/components/Board';
 import ProfilePanel from '@/components/ProfilePanel';
-import { GameState, CardData, Row, Player } from '@/types/game';
+import MulliganModal from '@/components/MulliganModal';
+import { Row } from '@/types/game';
 import { gameReducer } from '@/reducer/gameReducer';
-
-const sampleCard: CardData = { id: '1', name: 'Blue Stripes Commando', strength: 4, row: 'melee', faction: 'Northern Realms' };
-const initialPlayer = (id: string, name: string): Player => ({
-  id, name,
-  deck: [sampleCard], hand: [sampleCard],
-  board: { melee: [], ranged: [], siege: [] },
-  score: 0, passed: false, roundsWon: 0
-});
-const initialState: GameState = {
-  players: [initialPlayer('p1','Enemy'), initialPlayer('p2','You')],
-  currentPlayerId: 'p2', round: 1
-};
+import { useCards } from '@/data/useCards';
 
 const App: React.FC = () => {
-  const [state, dispatch] = useReducer(gameReducer, initialState);
+  const { cards, loading } = useCards();
+  const [state, dispatch] = useReducer(gameReducer, {
+    players: [
+      { id: 'p1', name: 'Enemy', deck: [], hand: [], mulliganHand: [], board: { melee: [], ranged: [], siege: [] }, score: 0, passed: false, roundsWon: 0 },
+      { id: 'p2', name: 'You', deck: [], hand: [], mulliganHand: [], board: { melee: [], ranged: [], siege: [] }, score: 0, passed: false, roundsWon: 0 }
+    ],
+    currentPlayerId: 'p2',
+    round: 1,
+    phase: 'mulligan',
+  });
 
-  const endTurn = () => {
-    dispatch({ type: 'END_TURN', payload: { nextPlayerId: state.players.find(p => p.id !== state.currentPlayerId)!.id } });
+  useEffect(() => {
+    if (!loading && cards.length > 0) {
+      dispatch({ type: 'INIT', payload: { players: [
+        { id:'p1', name:'Enemy', deck:cards, hand:[], mulliganHand:[], board:{melee:[],ranged:[],siege:[]}, score:0, passed:false, roundsWon:0 },
+        { id:'p2', name:'You', deck:cards, hand:[], mulliganHand:[], board:{melee:[],ranged:[],siege:[]}, score:0, passed:false, roundsWon:0 }
+      ], currentPlayerId:'p2', round:1, phase:'mulligan' } });
+    }
+  }, [loading, cards]);
+
+  if (loading || !state) return <div>Loading...</div>;
+
+  if (state.phase === 'mulligan') {
+    const player = state.players.find(p => p.id === state.currentPlayerId)!;
+    return <MulliganModal cards={player.mulliganHand} onConfirm={keepIds => dispatch({ type:'MULLIGAN', payload:{ keepIds } })} />;
+  }
+  else if (state.phase === 'play') {
+     const endTurn = () => {
+    const nextPlayerId = state.players.find(p => p.id !== state.currentPlayerId)!.id;
+    dispatch({ type: 'END_TURN', payload: { nextPlayerId } });
   };
-
-  const pass = () => {
-    dispatch({ type: 'PASS', payload: { playerId: state.currentPlayerId } });
-  };
-
+  const pass = () => dispatch({ type: 'PASS', payload: { playerId: state.currentPlayerId } });
   const handlePlay = (cardId: string, targetRow: Row) => {
     const player = state.players.find(p => p.id === state.currentPlayerId)!;
     const card = player.hand.find(c => c.id === cardId);
     if (card) dispatch({ type: 'PLAY_CARD', payload: { playerId: player.id, card: { ...card, row: targetRow } } });
   };
-
-  return (
-    <div className="app-layout">
+    return (
+      <div className="app-layout">
       <div className="sidebar">
         <ProfilePanel player={state.players[0]} isCurrent={state.currentPlayerId===state.players[0].id} />
         <button className="end-turn-btn" onClick={endTurn}>End Turn</button>
@@ -45,7 +56,20 @@ const App: React.FC = () => {
         <Board gameState={state} onPlay={handlePlay} />
       </div>
     </div>
-  );
-};
+    );
+  }
+  else if (state.phase === 'ended') {
+    const winner = state.players.reduce((prev, curr) => (curr.roundsWon > prev.roundsWon ? curr : prev));
+    return (
+      <div className="game-over">
+        <h2>Game Over</h2>
+        <h3>Winner: {winner.name}</h3>
+        <button onClick={() => dispatch({ type: 'RESET' })}>Play Again</button>
+      </div>
+    );
+  }
+  // Default case, should not happen
+  return <div className="error">Unexpected game state</div>;
+  };
 
 export default App;

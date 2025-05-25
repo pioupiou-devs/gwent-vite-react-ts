@@ -1,4 +1,5 @@
 export type Row = 'melee' | 'ranged' | 'siege';
+export type Phase = 'mulligan' | 'play' | 'ended';
 
 export interface CardData {
   id: string;
@@ -14,6 +15,7 @@ export interface Player {
   name: string;
   deck: CardData[];
   hand: CardData[];
+  mulliganHand: CardData[];
   board: Record<Row, CardData[]>;
   score: number;
   passed: boolean;
@@ -24,4 +26,5 @@ export interface GameState {
   players: [Player, Player];
   currentPlayerId: string;
   round: number;
+  phase: Phase;
 } 
