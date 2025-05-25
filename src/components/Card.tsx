@@ -18,10 +18,10 @@ const Card: React.FC<CardProps> = ({ card }) => {
       role="button"
       tabIndex={0}
     >
-      <h3 className="card-title">{card.name}</h3>
-      <div className="card-detail">Strength: <span className="card-strength">{card.strength}</span></div>
-      <div className="card-detail">Row: <span className="card-row">{card.row}</span></div>
-      {card.isHero && <div className="card-hero">Hero</div>}
+      <h3 className="card-title">{card.type.name}</h3>
+      <div className="card-detail">Strength: <span className="card-strength">{card.type.strength}</span></div>
+      <div className="card-detail">Row: <span className="card-row">{card.type.row}</span></div>
+      {card.type.isHero && <div className="card-hero">Hero</div>}
     </div>
   );
 };
