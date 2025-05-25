@@ -20,10 +20,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!loading && cards.length > 0) {
-      dispatch({ type: 'INIT', payload: { players: [
-        { id:'p1', name:'Enemy', deck:cards, hand:[], mulliganHand:[], board:{melee:[],ranged:[],siege:[]}, score:0, passed:false, roundsWon:0 },
-        { id:'p2', name:'You', deck:cards, hand:[], mulliganHand:[], board:{melee:[],ranged:[],siege:[]}, score:0, passed:false, roundsWon:0 }
-      ], currentPlayerId:'p2', round:1, phase:'mulligan' } });
+      dispatch({ type: 'INIT' });
     }
   }, [loading, cards]);
 
@@ -31,7 +28,7 @@ const App: React.FC = () => {
 
   if (state.phase === 'mulligan') {
     const player = state.players.find(p => p.id === state.currentPlayerId)!;
-    return <MulliganModal cards={player.mulliganHand} onConfirm={keepIds => dispatch({ type:'MULLIGAN', payload:{ keepIds } })} />;
+    return <MulliganModal cards={player.mulliganHand} onConfirm={keepIds => dispatch({ type:'MULLIGAN', payload: { keepInstanceIds: keepIds } })} />;
   }
   else if (state.phase === 'play') {
      const endTurn = () => {
@@ -41,8 +38,8 @@ const App: React.FC = () => {
   const pass = () => dispatch({ type: 'PASS', payload: { playerId: state.currentPlayerId } });
   const handlePlay = (cardId: string, targetRow: Row) => {
     const player = state.players.find(p => p.id === state.currentPlayerId)!;
-    const card = player.hand.find(c => c.id === cardId);
-    if (card) dispatch({ type: 'PLAY_CARD', payload: { playerId: player.id, card: { ...card, row: targetRow } } });
+    const card = player.hand.find(c => c.instanceId === cardId);
+    if (card) dispatch({ type: 'PLAY_CARD', payload: { playerId: player.id, instanceId: card.instanceId, row: targetRow } });
   };
     return (
       <div className="app-layout">

@@ -2,7 +2,8 @@ export type Row = 'melee' | 'ranged' | 'siege';
 export type Phase = 'mulligan' | 'play' | 'ended';
 
 export interface CardData {
-  id: string;
+  typeId: string;
+  instanceId: string;
   name: string;
   strength: number;
   row: Row;
