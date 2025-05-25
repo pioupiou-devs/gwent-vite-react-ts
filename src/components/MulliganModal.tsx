@@ -23,12 +23,12 @@ const MulliganModal: React.FC<MulliganModalProps> = ({ cards, onConfirm }) => {
         <div className="mulligan-grid">
           {cards.map(c => (
             <div
-              key={c.instanceId}
-              className={`mulligan-card ${selected.has(c.instanceId) ? 'marked' : ''}`}
-              onClick={() => toggle(c.instanceId)}
+              key={c.id}
+              className={`mulligan-card ${selected.has(c.id) ? 'marked' : ''}`}
+              onClick={() => toggle(c.id)}
             >
-              <h4>{c.name}</h4>
-              <p>Strength: {c.strength}</p>
+              <h4>{c.type.name}</h4>
+              <p>Strength: {c.type.strength}</p>
             </div>
           ))}
         </div>

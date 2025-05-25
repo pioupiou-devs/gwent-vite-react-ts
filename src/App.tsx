@@ -20,7 +20,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!loading && cards.length > 0) {
-      dispatch({ type: 'INIT' });
+      dispatch({ type: 'INIT', payload: {
+        players: [
+          { id: 'p1', name: 'Enemy', deck: cards, hand: [], mulliganHand: [], board: { melee: [], ranged: [], siege: [] }, score: 0, passed: false, roundsWon: 0 },
+          { id: 'p2', name: 'You', deck: cards, hand: [], mulliganHand: [], board: { melee: [], ranged: [], siege: [] }, score: 0, passed: false, roundsWon: 0 }
+        ],
+        currentPlayerId: 'p2',
+        round: 1,
+      } });
     }
   }, [loading, cards]);
 
@@ -38,8 +45,8 @@ const App: React.FC = () => {
   const pass = () => dispatch({ type: 'PASS', payload: { playerId: state.currentPlayerId } });
   const handlePlay = (cardId: string, targetRow: Row) => {
     const player = state.players.find(p => p.id === state.currentPlayerId)!;
-    const card = player.hand.find(c => c.instanceId === cardId);
-    if (card) dispatch({ type: 'PLAY_CARD', payload: { playerId: player.id, instanceId: card.instanceId, row: targetRow } });
+    const card = player.hand.find(c => c.id === cardId);
+    if (card) dispatch({ type: 'PLAY_CARD', payload: { playerId: player.id, instanceId: card.id, row: targetRow } });
   };
     return (
       <div className="app-layout">
@@ -61,7 +68,7 @@ const App: React.FC = () => {
       <div className="game-over">
         <h2>Game Over</h2>
         <h3>Winner: {winner.name}</h3>
-        <button onClick={() => dispatch({ type: 'RESET' })}>Play Again</button>
+        <button onClick={() => dispatch({ type: 'RESET', payload:{} })}>Play Again</button>
       </div>
     );
   }

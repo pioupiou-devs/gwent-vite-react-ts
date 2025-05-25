@@ -1,4 +1,4 @@
-import { GameState, CardData, Player } from '@/types/game';
+import { GameState, CardData, Player, CardType } from '@/types/game';
 import { v4 as uuidv4 } from 'uuid';
 
 type Action =
@@ -7,14 +7,14 @@ type Action =
   | { type: 'PLAY_CARD'; payload: { playerId: string; instanceId: string; row: keyof Player['board'] } }
   | { type: 'END_TURN'; payload: { nextPlayerId: string } }
   | { type: 'PASS'; payload: { playerId: string } }
-  | { type: 'RESET' };
+  | { type: 'RESET'; payload: object };
 
 // sample a number of instances with unique instanceIds
-function sampleInstances(pool: CardData[], count: number): CardData[] {
+function sampleInstances(pool: CardType[], count: number): CardData[] {
   const result: CardData[] = [];
   for (let i = 0; i < count; i++) {
     const base = pool[Math.floor(Math.random() * pool.length)];
-    result.push({ ...base, instanceId: uuidv4() });
+    result.push({ id: uuidv4(), type: base });
   }
   return result;
 }
@@ -33,21 +33,21 @@ function resetBoard(players: [Player, Player]): [Player, Player] {
 }
 
 export function gameReducer(state: GameState, action: Action): GameState {
-    if (action.type === 'INIT') {
-      // Initialize game: draw 10 instances for each player
-      const mapped = state.players.map(p => ({
-        ...p,
-        hand: [],
-        mulliganHand: sampleInstances(p.deck, 10),
-        board: { melee: [], ranged: [], siege: [] },
-        score: 0,
-        passed: false,
-        roundsWon: 0,
-      }));
-      const [p1, p2] = mapped;
-      const initPlayers: [typeof p1, typeof p2] = [p1, p2];
+  if (action.type === 'INIT') {
+    // Initialize game: draw 10 instances for each player
+    const mapped = action.payload.players.map(p => ({
+      ...p,
+      hand: [],
+      mulliganHand: sampleInstances(p.deck, 10),
+      board: { melee: [], ranged: [], siege: [] },
+      score: 0,
+      passed: false,
+      roundsWon: 0,
+    }));
+    const [p1, p2] = mapped;
+    const initPlayers: [typeof p1, typeof p2] = [p1, p2];
 
-      return { players: initPlayers, currentPlayerId: state.currentPlayerId, round: state.round, phase: 'mulligan' };
+    return { players: initPlayers, currentPlayerId: action.payload.currentPlayerId, round: action.payload.round, phase: 'mulligan' };
   }
 
   switch (action.type) {
@@ -55,7 +55,7 @@ export function gameReducer(state: GameState, action: Action): GameState {
       const players = state.players.map(p => {
         if (p.id !== state.currentPlayerId) return p;
         // keep unmarked, redraw marked
-        const keep = p.mulliganHand.filter(c => !action.payload.keepInstanceIds.includes(c.instanceId));
+        const keep = p.mulliganHand.filter(c => !action.payload.keepInstanceIds.includes(c.id));
         const redrawCount = p.mulliganHand.length - keep.length;
         const redraws = sampleInstances(p.deck, redrawCount);
         return { ...p, hand: [...keep, ...redraws], mulliganHand: [] };
@@ -67,10 +67,10 @@ export function gameReducer(state: GameState, action: Action): GameState {
       const players = state.players.map(p => {
         if (p.id !== action.payload.playerId) return p;
         // play instance with instanceId
-        const card = p.hand.find(c => c.instanceId === action.payload.instanceId)!;
-        const newHand = p.hand.filter(c => c.instanceId !== action.payload.instanceId);
+        const card = p.hand.find(c => c.id === action.payload.instanceId)!;
+        const newHand = p.hand.filter(c => c.id !== action.payload.instanceId);
         const newBoard = { ...p.board, [action.payload.row]: [...p.board[action.payload.row], card] };
-        const newScore = Object.values(newBoard).flat().reduce((s, c) => s + c.strength, 0);
+        const newScore = Object.values(newBoard).flat().reduce((s, c) => s + c.type.strength, 0);
         return { ...p, hand: newHand, board: newBoard, score: newScore, passed: newHand.length === 0 };
       }) as [Player, Player];
 

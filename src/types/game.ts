@@ -1,20 +1,25 @@
 export type Row = 'melee' | 'ranged' | 'siege';
 export type Phase = 'mulligan' | 'play' | 'ended';
 
-export interface CardData {
-  typeId: string;
-  instanceId: string;
+export interface CardType {
+  id: string;
   name: string;
   strength: number;
-  row: Row;
+  row: string;
   faction: string;
   isHero?: boolean;
+  imageUrl?: string;
+}
+
+export interface CardData {
+  id: string;
+  type: CardType;
 }
 
 export interface Player {
   id: string;
   name: string;
-  deck: CardData[];
+  deck: CardType[];
   hand: CardData[];
   mulliganHand: CardData[];
   board: Record<Row, CardData[]>;
